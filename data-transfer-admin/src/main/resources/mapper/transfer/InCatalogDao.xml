@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="gov.gxgt.transfer.modules.transfer.dao.InCatalogDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="gov.gxgt.transfer.modules.transfer.entity.InCatalogEntity" id="inCatalogMap">
+        <result property="id" column="Id"/>
+        <result property="code" column="Code"/>
+        <result property="name" column="Name"/>
+        <result property="simplename" column="SimpleName"/>
+        <result property="orderby" column="OrderBy"/>
+        <result property="daysoflaw" column="DaysOfLaw"/>
+        <result property="daysofpromise" column="DaysOfPromise"/>
+        <result property="createprojectapi" column="CreateProjectApi"/>
+        <result property="supplementapi" column="SupplementApi"/>
+        <result property="isinnernet" column="IsInnerNet"/>
+        <result property="identity" column="Identity"/>
+        <result property="isdeleted" column="IsDeleted"/>
+        <result property="createdtime" column="CreatedTime"/>
+        <result property="updatetime" column="UpdateTime"/>
+        <result property="deletedtime" column="DeletedTime"/>
+        <result property="deptcode" column="DeptCode"/>
+        <result property="deptname" column="DeptName"/>
+        <result property="cantoncode" column="CantonCode"/>
+        <result property="materials" column="Materials"/>
+        <result property="issetting" column="IsSetting"/>
+        <result property="rowguid" column="RowGuid"/>
+        <result property="childcode" column="ChildCode"/>
+    </resultMap>
+
+
+</mapper>

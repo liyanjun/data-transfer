@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.gxgt.transfer.modules.transfer.asyn.event.BusinessAcceptEvent;
 import gov.gxgt.transfer.modules.transfer.asyn.event.RecerviOnlineApplyEvent;
 import gov.gxgt.transfer.modules.transfer.config.TransferConfig;
+import gov.gxgt.transfer.modules.transfer.entity.InCatalogEntity;
 import gov.gxgt.transfer.modules.transfer.entity.TransferAuditItemEntity;
 import gov.gxgt.transfer.modules.transfer.entity.TransferRequestRecordEntity;
+import gov.gxgt.transfer.modules.transfer.service.InCatalogService;
 import gov.gxgt.transfer.modules.transfer.service.TransferAuditItemService;
 import gov.gxgt.transfer.modules.transfer.service.TransferRequestRecordService;
 import gov.gxgt.transfer.modules.transfer.utils.TokenUtils;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.IOException;
 import java.util.*;
@@ -62,6 +65,9 @@ public class ReceiveOnlineApplyListener {
     @Autowired
     private YthBdcService ythBdcService;
 
+    @Autowired
+    private InCatalogService inCatalogService;
+
     @Async
     @EventListener
     public void onApplicationEvent(RecerviOnlineApplyEvent recerviOnlineApplyEvent) throws IOException, DocumentException {
@@ -73,13 +79,10 @@ public class ReceiveOnlineApplyListener {
             // 已推送，不管了
             return;
         }
-        TransferAuditItemEntity transferAuditItemEntity = transferAuditItemService.getOne(new QueryWrapper<TransferAuditItemEntity>().
-                eq("area_code", ythBdcEntity.getAreaCode()).eq("SXMC", "抵押权登记").le("rownum", 1));
-        if (transferAuditItemEntity == null) {
-            transferAuditItemEntity = transferAuditItemService.getOne(new QueryWrapper<TransferAuditItemEntity>().
-                    eq("area_code", ythBdcEntity.getAreaCode()).like("SXMC", "抵押权首次登记").le("rownum", 1));
-        }
-        if (transferAuditItemEntity == null) {
+        // TODO 这里事项名称要搞定
+        InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().
+                eq("CANTONCODE", ythBdcEntity.getAreaCode()).eq("NAME", "抵押权首次登记").le("rownum", 1));
+        if (inCatalogEntity == null) {
             logger.error(ythBdcEntity.getId() + "：找不到相应的事项。");
             ythBdcEntity.setException(ythBdcEntity.getId() + "：接口查询不到相应的事项。");
             ythBdcEntity.setState(-1);
@@ -87,7 +90,7 @@ public class ReceiveOnlineApplyListener {
             return;
         }
         Map map = objectMapper.readValue(ythBdcEntity.getDataSb(), Map.class);
-        map = getItemInfo(map, transferAuditItemEntity);
+        map = getItemInfo(map, inCatalogEntity);
         if (map == null) {
             logger.error(ythBdcEntity.getId() + "：找不到相应的事项。");
             ythBdcEntity.setException(ythBdcEntity.getId() + "：接口查询不到相应的事项。");
@@ -129,14 +132,14 @@ public class ReceiveOnlineApplyListener {
         }
     }
 
-    private Map getItemInfo(Map map, TransferAuditItemEntity transferAuditItemEntity) throws JsonProcessingException {
+    private Map getItemInfo(Map map, InCatalogEntity inCatalogEntity) throws JsonProcessingException {
         Map json = new HashMap(16);
         Map param = new HashMap(16);
-        param.put("AREA_CODE", transferAuditItemEntity.getAreaCode());
+        param.put("AREA_CODE", inCatalogEntity.getCantoncode());
         param.put("TIME_STAMP", "0");
         param.put("TASK_STATE", "1");
         param.put("IS_HISTORY", "0");
-        param.put("TASK_CODE", transferAuditItemEntity.getTaskCode().trim());
+        param.put("TASK_CODE", inCatalogEntity.getCode().trim());
         json.put("param", param);
 
         HttpHeaders headers = new HttpHeaders();
@@ -154,17 +157,19 @@ public class ReceiveOnlineApplyListener {
         List<Map> list = ((List) ((Map) result.get("data")).get("list"));
         for (Map temp : list) {
             Map item = (Map) temp.get("AUDIT_ITEM");
-            if (StringUtils.isBlank(item.get("ywcode").toString())) {
-                if (item.get("task_code").equals(transferAuditItemEntity.getTaskCode().trim())) {
-                    selectItem = temp;
-                }
-            } else {
-                if (item.get("ywcode").equals(transferAuditItemEntity.getYwcode().trim())) {
+            if (item.get("task_code").equals(inCatalogEntity.getCode().trim())) {
+                selectItem = temp;
+            }
+        }
+        for (Map temp : list) {
+            Map item = (Map) temp.get("AUDIT_ITEM");
+            if (StringUtils.isNotBlank(item.get("ywcode").toString())) {
+                if (item.get("ywcode").equals(inCatalogEntity.getChildcode().trim())) {
                     selectItem = temp;
                 }
             }
         }
-        if(selectItem == null){
+        if (selectItem == null) {
             map = null;
             return map;
         }
@@ -175,7 +180,7 @@ public class ReceiveOnlineApplyListener {
         map.put("SXBM", StringUtils.isBlank(item.get("ywcode").toString()) ? item.get("task_code") : item.get("ywcode"));
         map.put("SXBM_SHORT ", item.get("task_code"));
         map.put("SXBM_SHORT", item.get("task_code"));
-        map.put("SXMC", item.get("task_name"));
+        map.put("SXMC", item.get("task_name") + "自然资源厅测试");
         map.put("YWBLQHDM", map.get("YWBLQHDM") + "000000");
         map.put("SXBBBM", item.get("item_id"));
         map.put("SXBDBM", item.get("rowguid"));

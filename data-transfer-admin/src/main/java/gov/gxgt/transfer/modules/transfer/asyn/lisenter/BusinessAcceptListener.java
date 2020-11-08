@@ -8,8 +8,10 @@ import com.thoughtworks.xstream.XStream;
 import gov.gxgt.transfer.common.utils.DateUtils;
 import gov.gxgt.transfer.modules.transfer.asyn.event.BusinessAcceptEvent;
 import gov.gxgt.transfer.modules.transfer.config.TransferConfig;
+import gov.gxgt.transfer.modules.transfer.entity.InCatalogEntity;
 import gov.gxgt.transfer.modules.transfer.entity.TransferAuditItemEntity;
 import gov.gxgt.transfer.modules.transfer.entity.TransferRequestRecordEntity;
+import gov.gxgt.transfer.modules.transfer.service.InCatalogService;
 import gov.gxgt.transfer.modules.transfer.service.TransferAuditItemService;
 import gov.gxgt.transfer.modules.transfer.service.TransferRequestRecordService;
 import gov.gxgt.transfer.modules.transfer.utils.MapEntryConverter;
@@ -65,6 +67,9 @@ public class BusinessAcceptListener {
     @Autowired
     private YthBdcService ythBdcService;
 
+    @Autowired
+    private InCatalogService inCatalogService;
+
     @Async
     @EventListener
     public void onApplicationEvent(BusinessAcceptEvent businessAcceptEvent) throws IOException, DocumentException {
@@ -76,18 +81,15 @@ public class BusinessAcceptListener {
             // 已推送，不管了
             return;
         }
-        TransferAuditItemEntity transferAuditItemEntity = transferAuditItemService.getOne(new QueryWrapper<TransferAuditItemEntity>().
-                eq("area_code", ythBdcEntity.getAreaCode()).eq("SXMC", "抵押权登记").le("rownum", 1));
-        if (transferAuditItemEntity == null) {
-            transferAuditItemEntity = transferAuditItemService.getOne(new QueryWrapper<TransferAuditItemEntity>().
-                    eq("area_code", ythBdcEntity.getAreaCode()).like("SXMC", "抵押权首次登记").le("rownum", 1));
-        }
-        if (transferAuditItemEntity == null) {
+        // TODO 这里事项名称要搞定
+        InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().
+                eq("CANTONCODE", ythBdcEntity.getAreaCode()).eq("NAME", "抵押权首次登记").le("rownum", 1));
+        if (inCatalogEntity == null) {
             logger.error(ythBdcEntity.getId() + "：找不到相应的事项。");
             return;
         }
         Map map = objectMapper.readValue(ythBdcEntity.getDataSl(), Map.class);
-        getItemInfo(map, transferAuditItemEntity);
+        getItemInfo(map, inCatalogEntity);
         String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + XMLUtils.multilayerMapToXml(map, false, "APPROVEDATAINFO");
         MultiValueMap requestMap = new LinkedMultiValueMap(16);
         requestMap.put("access_token", Collections.singletonList(accessToken));
@@ -122,14 +124,14 @@ public class BusinessAcceptListener {
         }
     }
 
-    private void getItemInfo(Map map, TransferAuditItemEntity transferAuditItemEntity) throws JsonProcessingException {
+    private void getItemInfo(Map map, InCatalogEntity inCatalogEntity) throws JsonProcessingException {
         Map json = new HashMap(16);
         Map param = new HashMap(16);
-        param.put("AREA_CODE", transferAuditItemEntity.getAreaCode());
+        param.put("AREA_CODE", inCatalogEntity.getCantoncode());
         param.put("TIME_STAMP", "0");
         param.put("TASK_STATE", "1");
         param.put("IS_HISTORY", "0");
-        param.put("TASK_CODE", transferAuditItemEntity.getTaskCode().trim());
+        param.put("TASK_CODE", inCatalogEntity.getCode().trim());
         json.put("param", param);
 
         HttpHeaders headers = new HttpHeaders();
@@ -139,6 +141,14 @@ public class BusinessAcceptListener {
         HttpEntity<String> formEntity = new HttpEntity<String>(objectMapper.writeValueAsString(json), headers);
         Map result = restTemplate.postForEntity(transferConfig.getUrl() + "getareaaudititemdata?access_token=" + tokenUtils.getAccessToken(), formEntity, Map.class).getBody();
         List<Map> list = ((List) ((Map) result.get("data")).get("list"));
+        for (Map temp : list) {
+            Map item = (Map) temp.get("AUDIT_ITEM");
+            if (StringUtils.isNotBlank(item.get("task_code").toString())) {
+                if (item.get("task_code").equals(inCatalogEntity.getCode().trim())) {
+                    map.put("SXBM", item.get("task_code"));
+                }
+            }
+        }
         for (Map temp : list) {
             Map item = (Map) temp.get("AUDIT_ITEM");
             ((Map) map.get("YUSHEN")).put("YWYSZT", "1");
@@ -151,16 +161,13 @@ public class BusinessAcceptListener {
             ((Map) map.get("YUSHEN")).put("YWYSBMBM", ((Map) map.get("SHOULI")).get("YWSLBMBM"));
             ((Map) map.get("YUSHEN")).put("YWYSSJ", ((Map) map.get("SHOULI")).get("YWSLSJ"));
             ((Map) map.get("YUSHEN")).put("YWYSBMMC", ((Map) map.get("SHOULI")).get("YWSLBMMC"));
-            if (StringUtils.isBlank(item.get("ywcode").toString())) {
-                if (item.get("task_code").equals(transferAuditItemEntity.getTaskCode().trim())) {
-                    map.put("SXBM", item.get("task_code"));
-                }
-            } else {
-                if (item.get("ywcode").equals(transferAuditItemEntity.getYwcode().trim())) {
+            if (StringUtils.isNotBlank(item.get("ywcode").toString())) {
+                if (item.get("ywcode").equals(inCatalogEntity.getChildcode().trim())) {
                     map.put("SXBM", item.get("ywcode"));
                 }
             }
         }
+
     }
 
 }

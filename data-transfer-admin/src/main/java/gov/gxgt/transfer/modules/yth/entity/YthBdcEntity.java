@@ -65,6 +65,6 @@ public class YthBdcEntity implements Serializable {
      */
     private String exception;
 
-    private String name;
+//    private String name;
 
 }

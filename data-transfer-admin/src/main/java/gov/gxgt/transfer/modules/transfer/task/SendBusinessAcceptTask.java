@@ -27,7 +27,7 @@ public class SendBusinessAcceptTask {
     private YthBdcService ythBdcService;
 
     public void run(String temp) {
-        // 一次查100条
+        // 一次查30条
         List<YthBdcEntity> ythBdcEntityList = ythBdcService.list(new QueryWrapper<YthBdcEntity>().
                 eq("STATE", 1).
                 isNotNull("AREA_CODE").

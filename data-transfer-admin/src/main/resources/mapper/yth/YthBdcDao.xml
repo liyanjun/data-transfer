@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="gov.gxgt.transfer.modules.yth.dao.YthBdcDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="gov.gxgt.transfer.modules.yth.entity.YthBdcEntity" id="ythBdcMap">
+        <result property="id" column="ID"/>
+        <result property="type" column="TYPE"/>
+        <result property="data" column="DATA"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="state" column="STATE"/>
+        <result property="areaCode" column="AREA_CODE"/>
+    </resultMap>
+
+
+</mapper>

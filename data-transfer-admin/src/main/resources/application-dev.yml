@@ -1,0 +1,64 @@
+#spring:
+#  datasource:
+#    type: com.alibaba.druid.pool.DruidDataSource
+#    druid:
+#      driver-class-name: com.mysql.cj.jdbc.Driver
+#      url: jdbc:mysql://localhost:3306/data-transfer?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+#      username: renren
+#      password: 123456
+#      initial-size: 10
+#      max-active: 100
+#      min-idle: 10
+#      max-wait: 60000
+#      pool-prepared-statements: true
+#      max-pool-prepared-statement-per-connection-size: 20
+#      time-between-eviction-runs-millis: 60000
+#      min-evictable-idle-time-millis: 300000
+#      #Oracle需要打开注释
+#      #validation-query: SELECT 1 FROM DUAL
+#      test-while-idle: true
+#      test-on-borrow: false
+#      test-on-return: false
+#      stat-view-servlet:
+#        enabled: true
+#        url-pattern: /druid/*
+#        #login-username: admin
+#        #login-password: admin
+#      filter:
+#        stat:
+#          log-slow-sql: true
+#          slow-sql-millis: 1000
+#          merge-sql: false
+#        wall:
+#          config:
+#            multi-statement-allow: true
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@6.9.8.15:1521/w_bdc_jfxt
+    username: w_bdc_jfxt
+    password: w_bdc_jfxt
+    db-name: W_BDC_JFXT #用来搜集数据库的所有表
+    filters: wall,mergeStat
+    driverClassName: oracle.jdbc.driver.OracleDriver
+    validationQuery: select 1 from dual
+
+data:
+  transfer:
+    url: http://59.211.219.71/share/
+    clientId: 05882a22-15ca-45b0-a44b-0f5e6f9da42f
+    clientSecret: 8d6533b6-ff84-45f0-83cb-136e8a6053d7
+    key: B185520FFC414E9C88A747AD3C9E4C24
+    secret: TIOMEX0GTISUBEWCERRU
+##多数据源的配置，需要引用renren-dynamic-datasource
+#dynamic:
+#  datasource:
+#    slave1:
+#      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+#      url: jdbc:sqlserver://localhost:1433;DatabaseName=renren_security
+#      username: sa
+#      password: 123456
+#    slave2:
+#      driver-class-name: org.postgresql.Driver
+#      url: jdbc:postgresql://localhost:5432/renren_security
+#      username: renren
+#      password: 123456

@@ -1,0 +1,51 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /renren-generator
+
+
+spring:
+  datasource:
+#    type: com.alibaba.druid.pool.DruidDataSource
+#    #MySQL配置
+#    driverClassName: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/renren_security?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+#    username: renren
+#    password: 123456
+    #oracle配置
+    url: jdbc:oracle:thin:@6.9.8.15:1521/w_bdc_jfxt
+    username: w_bdc_jfxt
+    password: w_bdc_jfxt
+    db-name: W_BDC_JFXT #用来搜集数据库的所有表
+    filters: wall,mergeStat
+    driverClassName: oracle.jdbc.driver.OracleDriver
+    #SQLServer配置
+#    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+#    url: jdbc:sqlserver://192.168.10.10:1433;DatabaseName=renren_security
+#    username: sa
+#    password: 123456
+    #PostgreSQL配置
+#    driverClassName: org.postgresql.Driver
+#    url: jdbc:postgresql://192.168.10.10:5432/renren_security
+#    username: postgres
+#    password: 123456
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  resources:
+    static-locations: classpath:/static/,classpath:/views/
+
+
+mybatis:
+  mapperLocations: classpath:mapper/**/*.xml
+
+
+pagehelper:
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+
+
+#指定数据库，可选值有【mysql、oracle、sqlserver、postgresql】
+renren:
+  database: oracle

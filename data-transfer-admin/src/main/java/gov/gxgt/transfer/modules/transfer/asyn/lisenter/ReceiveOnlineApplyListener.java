@@ -28,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -70,11 +71,12 @@ public class ReceiveOnlineApplyListener {
 
     @Async
     @EventListener
+    @Transactional
     public void onApplicationEvent(RecerviOnlineApplyEvent recerviOnlineApplyEvent) throws IOException, DocumentException {
         TransferRequestRecordEntity transferRequestRecordEntity = null;
         String accessToken = tokenUtils.getAccessToken();
         // 锁行，开始发送申报信息
-        YthBdcEntity ythBdcEntity = ythBdcService.getOne(new QueryWrapper<YthBdcEntity>().eq("ID", recerviOnlineApplyEvent.getSource()).last(" for update"));
+        YthBdcEntity ythBdcEntity = ythBdcService.getOne(new QueryWrapper<YthBdcEntity>().eq("ID", recerviOnlineApplyEvent.getSource()));
         if (ythBdcEntity.getState() != 0) {
             // 已推送，不管了
             return;
@@ -163,8 +165,8 @@ public class ReceiveOnlineApplyListener {
         }
         for (Map temp : list) {
             Map item = (Map) temp.get("AUDIT_ITEM");
-            if (StringUtils.isNotBlank(item.get("ywcode").toString())) {
-                if (item.get("ywcode").equals(inCatalogEntity.getChildcode().trim())) {
+            if (item.get("ywcode") != null && StringUtils.isNotBlank(item.get("ywcode").toString())) {
+                if (inCatalogEntity.getChildcode() != null && item.get("ywcode").equals(inCatalogEntity.getChildcode().trim())) {
                     selectItem = temp;
                 }
             }

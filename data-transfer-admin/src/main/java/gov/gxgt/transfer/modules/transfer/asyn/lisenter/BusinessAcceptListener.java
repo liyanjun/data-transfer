@@ -76,7 +76,7 @@ public class BusinessAcceptListener {
         TransferRequestRecordEntity transferRequestRecordEntity = null;
         String accessToken = tokenUtils.getAccessToken();
         // 锁行，开始发送受理信息
-        YthBdcEntity ythBdcEntity = ythBdcService.getOne(new QueryWrapper<YthBdcEntity>().eq("ID", businessAcceptEvent.getSource()).last(" for update"));
+        YthBdcEntity ythBdcEntity = ythBdcService.getOne(new QueryWrapper<YthBdcEntity>().eq("ID", businessAcceptEvent.getSource()));
         if (ythBdcEntity.getState() != 1) {
             // 已推送，不管了
             return;
@@ -100,7 +100,7 @@ public class BusinessAcceptListener {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(requestMap, headers);
         try {
             // 保存发送记录
-            transferRequestRecordEntity = transferRequestRecordService.saveRequest(objectMapper.writeValueAsString(map), ythBdcEntity.getId(), 1);
+            transferRequestRecordEntity = transferRequestRecordService.saveRequest(objectMapper.writeValueAsString(map), ythBdcEntity.getId(), 2);
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(transferConfig.getUrl() + "httpapi/approve/receiveBusinessAccept", request, String.class);
             String result = responseEntity.getBody();
             transferRequestRecordEntity.setResponse(result);
@@ -161,8 +161,8 @@ public class BusinessAcceptListener {
             ((Map) map.get("YUSHEN")).put("YWYSBMBM", ((Map) map.get("SHOULI")).get("YWSLBMBM"));
             ((Map) map.get("YUSHEN")).put("YWYSSJ", ((Map) map.get("SHOULI")).get("YWSLSJ"));
             ((Map) map.get("YUSHEN")).put("YWYSBMMC", ((Map) map.get("SHOULI")).get("YWSLBMMC"));
-            if (StringUtils.isNotBlank(item.get("ywcode").toString())) {
-                if (item.get("ywcode").equals(inCatalogEntity.getChildcode().trim())) {
+            if (item.get("ywcode") != null && StringUtils.isNotBlank(item.get("ywcode").toString())) {
+                if (inCatalogEntity.getChildcode() != null && item.get("ywcode").equals(inCatalogEntity.getChildcode().trim())) {
                     map.put("SXBM", item.get("ywcode"));
                 }
             }

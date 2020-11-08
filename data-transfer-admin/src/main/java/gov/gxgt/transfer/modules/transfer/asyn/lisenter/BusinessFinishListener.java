@@ -71,13 +71,13 @@ public class BusinessFinishListener {
         TransferRequestRecordEntity transferRequestRecordEntity = null;
         String accessToken = tokenUtils.getAccessToken();
         // 锁行，开始发送受理信息
-        YthBdcEntity ythBdcEntity = ythBdcService.getOne(new QueryWrapper<YthBdcEntity>().eq("ID", businessFinishEvent.getSource()).last(" for update"));
+        YthBdcEntity ythBdcEntity = ythBdcService.getOne(new QueryWrapper<YthBdcEntity>().eq("ID", businessFinishEvent.getSource()));
         if (ythBdcEntity.getState() != 3) {
             // 已推送，不管了
             return;
         }
         InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().
-                eq("area_code", ythBdcEntity.getAreaCode()).eq("SXMC", "抵押权登记").le("rownum", 1));
+                eq("CANTONCODE", ythBdcEntity.getAreaCode()).eq("NAME", "抵押权登记").le("rownum", 1));
         if (inCatalogEntity == null) {
             logger.error(ythBdcEntity.getId() + "：找不到相应的事项。");
             return;
@@ -94,7 +94,7 @@ public class BusinessFinishListener {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(requestMap, headers);
         try {
             // 保存发送记录
-            transferRequestRecordEntity = transferRequestRecordService.saveRequest(objectMapper.writeValueAsString(map), ythBdcEntity.getId(), 1);
+            transferRequestRecordEntity = transferRequestRecordService.saveRequest(objectMapper.writeValueAsString(map), ythBdcEntity.getId(), 4);
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(transferConfig.getUrl() + "httpapi/approve/receiveBusinessFinish", request, String.class);
             String result = responseEntity.getBody();
             transferRequestRecordEntity.setResponse(result);
@@ -144,8 +144,8 @@ public class BusinessFinishListener {
         }
         for (Map temp : list) {
             Map item = (Map) temp.get("AUDIT_ITEM");
-            if (StringUtils.isNotBlank(item.get("ywcode").toString())) {
-                if (item.get("ywcode").equals(inCatalogEntity.getChildcode().trim())) {
+            if (item.get("ywcode") != null && StringUtils.isNotBlank(item.get("ywcode").toString())) {
+                if (inCatalogEntity.getChildcode() != null && item.get("ywcode").equals(inCatalogEntity.getChildcode().trim())) {
                     selectItem = temp;
                 }
             }

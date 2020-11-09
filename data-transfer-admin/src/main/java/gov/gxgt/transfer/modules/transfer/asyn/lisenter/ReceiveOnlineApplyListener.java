@@ -182,6 +182,7 @@ public class ReceiveOnlineApplyListener {
         map.put("SXBM", StringUtils.isBlank(item.get("ywcode").toString()) ? item.get("task_code") : item.get("ywcode"));
         map.put("SXBM_SHORT ", item.get("task_code"));
         map.put("SXBM_SHORT", item.get("task_code"));
+        // TODO 去掉测试标识
         map.put("SXMC", item.get("task_name") + "自然资源厅测试");
         map.put("YWBLQHDM", map.get("YWBLQHDM") + "000000");
         map.put("SXBBBM", item.get("item_id"));

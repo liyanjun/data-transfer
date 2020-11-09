@@ -70,20 +70,33 @@ public class BusinessFinishListener {
     public void onApplicationEvent(BusinessFinishEvent businessFinishEvent) throws IOException, DocumentException {
         TransferRequestRecordEntity transferRequestRecordEntity = null;
         String accessToken = tokenUtils.getAccessToken();
-        // 锁行，开始发送受理信息
         YthBdcEntity ythBdcEntity = ythBdcService.getOne(new QueryWrapper<YthBdcEntity>().eq("ID", businessFinishEvent.getSource()));
         if (ythBdcEntity.getState() != 3) {
             // 已推送，不管了
             return;
         }
+        YthBdcEntity temp = ythBdcService.getOne(new QueryWrapper<YthBdcEntity>().eq("XMBH", ythBdcEntity.getXmbh()).eq("STATE", 4));
+        if (temp == null) {
+            return;
+        }
+        Map map = objectMapper.readValue(temp.getDataBj(), Map.class);
+        String target = ythBdcEntity.getId() + "@" + ythBdcEntity.getAreaCode() + "@" + ythBdcEntity.getSpsx();
+        Map spbanjie = ((Map) map.get("SPBANJIE"));
+        spbanjie.put("SBLSH", ythBdcEntity.getLsh());
+        spbanjie.put("SBLSH_SHORT", ythBdcEntity.getLsh());
+        map.put("SBLSH_SHORT", ythBdcEntity.getLsh());
+        Object o = spbanjie.get("BJSJ");
+        if (o == null || StringUtils.isBlank(o.toString())) {
+            logger.error(target + "：未办结，待办结后推送办结信息。");
+            return;
+        }
         InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().
                 eq("CANTONCODE", ythBdcEntity.getAreaCode()).eq("NAME", ythBdcEntity.getSpsx()).le("rownum", 1));
-        String target = ythBdcEntity.getId() + "@" + ythBdcEntity.getAreaCode() + "@" + ythBdcEntity.getSpsx();
         if (inCatalogEntity == null) {
             logger.error(target + "：找不到相应的事项。");
             return;
         }
-        Map map = objectMapper.readValue(ythBdcEntity.getDataBj(), Map.class);
+
         getItemInfo(map, inCatalogEntity);
         String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + XMLUtils.multilayerMapToXml(map, false, "APPROVEDATAINFO");
         MultiValueMap requestMap = new LinkedMultiValueMap(16);

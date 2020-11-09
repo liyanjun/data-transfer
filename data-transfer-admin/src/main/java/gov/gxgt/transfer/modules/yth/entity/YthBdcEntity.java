@@ -37,6 +37,10 @@ public class YthBdcEntity implements Serializable {
      */
     private String dataSb;
     /**
+     * 申报推送信息
+     */
+    private String xmbh;
+    /**
      * 受理推送信息
      */
     private String dataSl;
@@ -68,6 +72,10 @@ public class YthBdcEntity implements Serializable {
      * 异常信息
      */
     private String exception;
+    /**
+     * 流水号
+     */
+    private String lsh;
 
 //    private String name;
 

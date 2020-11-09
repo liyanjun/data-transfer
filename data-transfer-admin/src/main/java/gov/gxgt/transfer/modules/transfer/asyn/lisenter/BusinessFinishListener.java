@@ -75,21 +75,22 @@ public class BusinessFinishListener {
             // 已推送，不管了
             return;
         }
-        YthBdcEntity temp = ythBdcService.getOne(new QueryWrapper<YthBdcEntity>().eq("XMBH", ythBdcEntity.getXmbh()).eq("STATE", 4));
-        if (temp == null) {
-            return;
-        }
-        Map map = objectMapper.readValue(temp.getDataBj(), Map.class);
+//        YthBdcEntity temp = ythBdcService.getOne(new QueryWrapper<YthBdcEntity>().eq("XMBH", ythBdcEntity.getXmbh()).eq("STATE", 4));
+//        if (temp == null) {
+//            return;
+//        }
+//        Map map = objectMapper.readValue(temp.getDataBj(), Map.class);
+        Map map = objectMapper.readValue(ythBdcEntity.getDataBj(), Map.class);
         String target = ythBdcEntity.getId() + "@" + ythBdcEntity.getAreaCode() + "@" + ythBdcEntity.getSpsx();
-        Map spbanjie = ((Map) map.get("SPBANJIE"));
-        spbanjie.put("SBLSH", ythBdcEntity.getLsh());
-        spbanjie.put("SBLSH_SHORT", ythBdcEntity.getLsh());
-        map.put("SBLSH_SHORT", ythBdcEntity.getLsh());
-        Object o = spbanjie.get("BJSJ");
-        if (o == null || StringUtils.isBlank(o.toString())) {
-            logger.error(target + "：未办结，待办结后推送办结信息。");
-            return;
-        }
+//        Map spbanjie = ((Map) map.get("SPBANJIE"));
+//        spbanjie.put("SBLSH", ythBdcEntity.getLsh());
+//        spbanjie.put("SBLSH_SHORT", ythBdcEntity.getLsh());
+//        map.put("SBLSH_SHORT", ythBdcEntity.getLsh());
+//        Object o = spbanjie.get("BJSJ");
+//        if (o == null || StringUtils.isBlank(o.toString())) {
+//            logger.error(target + "：未办结，待办结后推送办结信息。");
+//            return;
+//        }
         InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().
                 eq("CANTONCODE", ythBdcEntity.getAreaCode()).eq("NAME", ythBdcEntity.getSpsx()).le("rownum", 1));
         if (inCatalogEntity == null) {

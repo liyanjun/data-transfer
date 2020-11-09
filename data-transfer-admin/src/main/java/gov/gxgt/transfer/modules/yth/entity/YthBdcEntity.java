@@ -61,6 +61,10 @@ public class YthBdcEntity implements Serializable {
      */
     private String areaCode;
     /**
+     * 区县代码
+     */
+    private String spsx;
+    /**
      * 异常信息
      */
     private String exception;

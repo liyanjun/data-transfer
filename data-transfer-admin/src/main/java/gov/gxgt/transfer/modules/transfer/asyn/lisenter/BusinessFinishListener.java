@@ -77,9 +77,10 @@ public class BusinessFinishListener {
             return;
         }
         InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().
-                eq("CANTONCODE", ythBdcEntity.getAreaCode()).eq("NAME", "抵押权登记").le("rownum", 1));
+                eq("CANTONCODE", ythBdcEntity.getAreaCode()).eq("NAME", ythBdcEntity.getSpsx()).le("rownum", 1));
+        String target = ythBdcEntity.getId() + "@" + ythBdcEntity.getAreaCode() + "@" + ythBdcEntity.getSpsx();
         if (inCatalogEntity == null) {
-            logger.error(ythBdcEntity.getId() + "：找不到相应的事项。");
+            logger.error(target + "：找不到相应的事项。");
             return;
         }
         Map map = objectMapper.readValue(ythBdcEntity.getDataBj(), Map.class);

@@ -83,10 +83,11 @@ public class ReceiveOnlineApplyListener {
         }
         // TODO 这里事项名称要搞定
         InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().
-                eq("CANTONCODE", ythBdcEntity.getAreaCode()).eq("NAME", "抵押权首次登记").le("rownum", 1));
+                eq("CANTONCODE", ythBdcEntity.getAreaCode()).eq("NAME", ythBdcEntity.getSpsx()).le("rownum", 1));
+        String target = ythBdcEntity.getId() + "@" + ythBdcEntity.getAreaCode() + "@" + ythBdcEntity.getSpsx();
         if (inCatalogEntity == null) {
             logger.error(ythBdcEntity.getId() + "：找不到相应的事项。");
-            ythBdcEntity.setException(ythBdcEntity.getId() + "：接口查询不到相应的事项。");
+            ythBdcEntity.setException(target + "：接口查询不到相应的事项。");
             ythBdcEntity.setState(-1);
             ythBdcService.updateById(ythBdcEntity);
             return;
@@ -95,7 +96,7 @@ public class ReceiveOnlineApplyListener {
         map = getItemInfo(map, inCatalogEntity);
         if (map == null) {
             logger.error(ythBdcEntity.getId() + "：找不到相应的事项。");
-            ythBdcEntity.setException(ythBdcEntity.getId() + "：接口查询不到相应的事项。");
+            ythBdcEntity.setException(target + "：接口查询不到相应的事项。");
             ythBdcEntity.setState(-1);
             ythBdcService.updateById(ythBdcEntity);
             return;

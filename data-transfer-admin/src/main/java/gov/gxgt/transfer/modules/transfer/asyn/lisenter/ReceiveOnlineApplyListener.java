@@ -85,8 +85,8 @@ public class ReceiveOnlineApplyListener {
                 eq("CANTONCODE", ythBdcEntity.getAreaCode()).eq("NAME", ythBdcEntity.getSpsx()).le("rownum", 1));
         String target = ythBdcEntity.getId() + "@" + ythBdcEntity.getAreaCode() + "@" + ythBdcEntity.getSpsx();
         if (inCatalogEntity == null) {
-            logger.error(target + "：找不到相应的事项。");
-            ythBdcEntity.setException(target + "：接口查询不到相应的事项。");
+            logger.error(target + "：查询找不到相应的事项。");
+            ythBdcEntity.setException(target + "：查询不到相应的事项。");
             ythBdcEntity.setState(-1);
             ythBdcService.updateById(ythBdcEntity);
             return;
@@ -94,7 +94,7 @@ public class ReceiveOnlineApplyListener {
         Map map = objectMapper.readValue(ythBdcEntity.getDataSb(), Map.class);
         map = getItemInfo(map, inCatalogEntity);
         if (map == null) {
-            logger.error(target + "：找不到相应的事项。");
+            logger.error(target + "：接口查询不到相应的事项。");
             ythBdcEntity.setException(target + "：接口查询不到相应的事项。");
             ythBdcEntity.setState(-1);
             ythBdcService.updateById(ythBdcEntity);

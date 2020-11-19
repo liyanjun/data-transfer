@@ -128,6 +128,11 @@ public class ReceiveOnlineApplyListener {
             }
         } catch (Exception e) {
             logger.error("推送数据异常", e);
+            if(e.getMessage().contains("403 Forbidden")){
+                ythBdcEntity.setException(target + "：推送数据异常。" + e.getMessage());
+                ythBdcEntity.setState(-1);
+                ythBdcService.updateById(ythBdcEntity);
+            }
             transferRequestRecordEntity.setException(e.getMessage());
             transferRequestRecordEntity.setResponseTime(new Date());
             transferRequestRecordService.updateById(transferRequestRecordEntity);
@@ -141,6 +146,7 @@ public class ReceiveOnlineApplyListener {
         param.put("TIME_STAMP", "0");
         param.put("TASK_STATE", "1");
         param.put("IS_HISTORY", "0");
+        param.put("ITEM_LIMIT", "100");
         param.put("TASK_CODE", inCatalogEntity.getCode().trim());
         json.put("param", param);
 

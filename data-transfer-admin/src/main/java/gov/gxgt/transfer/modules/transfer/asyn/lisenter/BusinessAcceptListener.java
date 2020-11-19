@@ -141,32 +141,17 @@ public class BusinessAcceptListener {
         HttpEntity<String> formEntity = new HttpEntity<String>(objectMapper.writeValueAsString(json), headers);
         Map result = restTemplate.postForEntity(transferConfig.getUrl() + "getareaaudititemdata?access_token=" + tokenUtils.getAccessToken(), formEntity, Map.class).getBody();
         List<Map> list = ((List) ((Map) result.get("data")).get("list"));
-        for (Map temp : list) {
-            Map item = (Map) temp.get("AUDIT_ITEM");
-            if (StringUtils.isNotBlank(item.get("task_code").toString())) {
-                if (item.get("task_code").equals(inCatalogEntity.getCode().trim())) {
-                    map.put("SXBM", item.get("task_code"));
-                }
-            }
-        }
-        for (Map temp : list) {
-            Map item = (Map) temp.get("AUDIT_ITEM");
-            ((Map) map.get("YUSHEN")).put("YWYSZT", "1");
-            ((Map) map.get("YUSHEN")).put("YWYSRBM", ((Map) map.get("SHOULI")).get("YWSLRBM"));
-            ((Map) map.get("YUSHEN")).put("YWYSRMC", ((Map) map.get("SHOULI")).get("YWSLRMC"));
-            ((Map) map.get("YUSHEN")).put("YWYSQHBM", ((Map) map.get("SHOULI")).get("YWSLQHBM"));
-            ((Map) map.get("YUSHEN")).put("YWYSYJ", "无");
-            ((Map) map.get("YUSHEN")).put("BZ", ((Map) map.get("SHOULI")).get("BZ"));
-            ((Map) map.get("YUSHEN")).put("YWYSQHMC", ((Map) map.get("SHOULI")).get("YWSLQHMC"));
-            ((Map) map.get("YUSHEN")).put("YWYSBMBM", ((Map) map.get("SHOULI")).get("YWSLBMBM"));
-            ((Map) map.get("YUSHEN")).put("YWYSSJ", ((Map) map.get("SHOULI")).get("YWSLSJ"));
-            ((Map) map.get("YUSHEN")).put("YWYSBMMC", ((Map) map.get("SHOULI")).get("YWSLBMMC"));
-            if (item.get("ywcode") != null && StringUtils.isNotBlank(item.get("ywcode").toString())) {
-                if (inCatalogEntity.getChildcode() != null && item.get("ywcode").equals(inCatalogEntity.getChildcode().trim())) {
-                    map.put("SXBM", item.get("ywcode"));
-                }
-            }
-        }
+        map.put("SXBM", StringUtils.isNotBlank(inCatalogEntity.getChildcode()) ? inCatalogEntity.getChildcode() : inCatalogEntity.getCode());
+        ((Map) map.get("YUSHEN")).put("YWYSZT", "1");
+        ((Map) map.get("YUSHEN")).put("YWYSRBM", ((Map) map.get("SHOULI")).get("YWSLRBM"));
+        ((Map) map.get("YUSHEN")).put("YWYSRMC", ((Map) map.get("SHOULI")).get("YWSLRMC"));
+        ((Map) map.get("YUSHEN")).put("YWYSQHBM", ((Map) map.get("SHOULI")).get("YWSLQHBM"));
+        ((Map) map.get("YUSHEN")).put("YWYSYJ", "无");
+        ((Map) map.get("YUSHEN")).put("BZ", ((Map) map.get("SHOULI")).get("BZ"));
+        ((Map) map.get("YUSHEN")).put("YWYSQHMC", ((Map) map.get("SHOULI")).get("YWSLQHMC"));
+        ((Map) map.get("YUSHEN")).put("YWYSBMBM", ((Map) map.get("SHOULI")).get("YWSLBMBM"));
+        ((Map) map.get("YUSHEN")).put("YWYSSJ", ((Map) map.get("SHOULI")).get("YWSLSJ"));
+        ((Map) map.get("YUSHEN")).put("YWYSBMMC", ((Map) map.get("SHOULI")).get("YWSLBMMC"));
 
     }
 

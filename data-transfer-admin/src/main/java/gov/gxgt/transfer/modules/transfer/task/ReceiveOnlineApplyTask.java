@@ -31,9 +31,10 @@ public class ReceiveOnlineApplyTask {
         // 一次查100条
         List<YthBdcEntity> ythBdcEntityList = ythBdcService.list(new QueryWrapper<YthBdcEntity>().
                 eq("STATE", 0).
+//                eq("AREA_CODE", 451323).
                 isNotNull("AREA_CODE").
                 isNotNull("DATA_SB").
-                lt("rownum", 30));
+                lt("rownum", 100));
         for (YthBdcEntity ythBdcEntity: ythBdcEntityList) {
             applicationContext.publishEvent(new RecerviOnlineApplyEvent(ythBdcEntity.getId()));
         }

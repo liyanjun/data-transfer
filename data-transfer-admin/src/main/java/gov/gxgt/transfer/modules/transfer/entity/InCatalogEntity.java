@@ -18,7 +18,7 @@ import java.util.Date;
  * @date 2020-11-08 22:05:29
  */
 @Data
-@TableName("IN_CATALOG")
+@TableName("IN_CATALOG_NEW")
 public class InCatalogEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -26,91 +26,91 @@ public class InCatalogEntity implements Serializable {
 	 * $column.comments
 	 */
 	@TableId(type = IdType.ID_WORKER)
-@JsonSerialize(using= ToStringSerializer.class)
-	private String id;
+	@JsonSerialize(using= ToStringSerializer.class)
+	private String Id;
 	/**
 	 * $column.comments
 	 */
-	private String code;
+	private String Code;
 	/**
 	 * $column.comments
 	 */
-	private String name;
+	private String Name;
 	/**
 	 * $column.comments
 	 */
-	private String simplename;
+	private String SimpleName;
 	/**
 	 * $column.comments
 	 */
-	private Integer orderby;
+	private Integer OrderBy;
 	/**
 	 * $column.comments
 	 */
-	private Integer daysoflaw;
+	private Integer DaysOfLaw;
 	/**
 	 * $column.comments
 	 */
-	private Integer daysofpromise;
+	private Integer DaysOfPromise;
 	/**
 	 * $column.comments
 	 */
-	private String createprojectapi;
+	private String CreateProjectApi;
 	/**
 	 * $column.comments
 	 */
-	private String supplementapi;
+	private String SupplementApi;
 	/**
 	 * $column.comments
 	 */
-	private Integer isinnernet;
+	private Integer IsInnerNet;
 	/**
 	 * $column.comments
 	 */
-	private String identity;
+	private String Identity;
 	/**
 	 * $column.comments
 	 */
-	private Integer isdeleted;
+	private Integer IsDeleted;
 	/**
 	 * $column.comments
 	 */
-	private Date createdtime;
+	private Date CreatedTime;
 	/**
 	 * $column.comments
 	 */
-	private Date updatetime;
+	private Date UpdateTime;
 	/**
 	 * $column.comments
 	 */
-	private Date deletedtime;
+	private Date DeletedTime;
 	/**
 	 * $column.comments
 	 */
-	private String deptcode;
+	private String DeptCode;
 	/**
 	 * $column.comments
 	 */
-	private String deptname;
+	private String DeptName;
 	/**
 	 * $column.comments
 	 */
-	private String cantoncode;
+	private String CantonCode;
 	/**
 	 * $column.comments
 	 */
-	private String materials;
+	private String Materials;
 	/**
 	 * $column.comments
 	 */
-	private Integer issetting;
+	private Integer IsSetting;
 	/**
 	 * $column.comments
 	 */
-	private String rowguid;
+	private String RowGuid;
 	/**
 	 * $column.comments
 	 */
-	private String childcode;
+	private String ChildCode;
 
 }

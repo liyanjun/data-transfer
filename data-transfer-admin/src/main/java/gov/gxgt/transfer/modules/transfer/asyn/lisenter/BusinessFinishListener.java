@@ -91,8 +91,8 @@ public class BusinessFinishListener {
 //            logger.error(target + "：未办结，待办结后推送办结信息。");
 //            return;
 //        }
-        InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().
-                eq("CANTONCODE", ythBdcEntity.getAreaCode()).eq("NAME", ythBdcEntity.getSpsx()).le("rownum", 1));
+        InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().select("*").
+                eq("\"CantonCode\"", ythBdcEntity.getAreaCode()).eq("\"Name\"", ythBdcEntity.getSpsx()).le("rownum", 1));
         if (inCatalogEntity == null) {
             logger.error(target + "：找不到相应的事项。");
             return;
@@ -136,7 +136,7 @@ public class BusinessFinishListener {
     private void getItemInfo(Map map, InCatalogEntity inCatalogEntity) throws JsonProcessingException {
         Map json = new HashMap(16);
         Map param = new HashMap(16);
-        param.put("AREA_CODE", inCatalogEntity.getCantoncode());
+        param.put("AREA_CODE", inCatalogEntity.getCantonCode());
         param.put("TIME_STAMP", "0");
         param.put("TASK_STATE", "1");
         param.put("IS_HISTORY", "0");
@@ -160,7 +160,7 @@ public class BusinessFinishListener {
         for (Map temp : list) {
             Map item = (Map) temp.get("AUDIT_ITEM");
             if (item.get("ywcode") != null && StringUtils.isNotBlank(item.get("ywcode").toString())) {
-                if (inCatalogEntity.getChildcode() != null && item.get("ywcode").equals(inCatalogEntity.getChildcode().trim())) {
+                if (inCatalogEntity.getChildCode() != null && item.get("ywcode").equals(inCatalogEntity.getChildCode().trim())) {
                     selectItem = temp;
                 }
             }

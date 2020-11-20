@@ -81,8 +81,8 @@ public class BusinessAcceptListener {
             // 已推送，不管了
             return;
         }
-        InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().
-                eq("CANTONCODE", ythBdcEntity.getAreaCode()).eq("NAME", ythBdcEntity.getSpsx()).le("rownum", 1));
+        InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().select("*").
+                eq("\"CantonCode\"", ythBdcEntity.getAreaCode()).eq("\"Name\"", ythBdcEntity.getSpsx()).le("rownum", 1));
         String target = ythBdcEntity.getId() + "@" + ythBdcEntity.getAreaCode() + "@" + ythBdcEntity.getSpsx();
         if (inCatalogEntity == null) {
             logger.error(target + "：找不到相应的事项。");
@@ -127,7 +127,7 @@ public class BusinessAcceptListener {
     private void getItemInfo(Map map, InCatalogEntity inCatalogEntity) throws JsonProcessingException {
         Map json = new HashMap(16);
         Map param = new HashMap(16);
-        param.put("AREA_CODE", inCatalogEntity.getCantoncode());
+        param.put("AREA_CODE", inCatalogEntity.getCantonCode());
         param.put("TIME_STAMP", "0");
         param.put("TASK_STATE", "1");
         param.put("IS_HISTORY", "0");
@@ -141,7 +141,7 @@ public class BusinessAcceptListener {
         HttpEntity<String> formEntity = new HttpEntity<String>(objectMapper.writeValueAsString(json), headers);
         Map result = restTemplate.postForEntity(transferConfig.getUrl() + "getareaaudititemdata?access_token=" + tokenUtils.getAccessToken(), formEntity, Map.class).getBody();
         List<Map> list = ((List) ((Map) result.get("data")).get("list"));
-        map.put("SXBM", StringUtils.isNotBlank(inCatalogEntity.getChildcode()) ? inCatalogEntity.getChildcode() : inCatalogEntity.getCode());
+        map.put("SXBM", StringUtils.isNotBlank(inCatalogEntity.getChildCode()) ? inCatalogEntity.getChildCode() : inCatalogEntity.getCode());
         ((Map) map.get("YUSHEN")).put("YWYSZT", "1");
         ((Map) map.get("YUSHEN")).put("YWYSRBM", ((Map) map.get("SHOULI")).get("YWSLRBM"));
         ((Map) map.get("YUSHEN")).put("YWYSRMC", ((Map) map.get("SHOULI")).get("YWSLRMC"));

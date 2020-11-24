@@ -92,7 +92,9 @@ public class BusinessFinishListener {
 //            return;
 //        }
         InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().select("*").
-                eq("\"CantonCode\"", ythBdcEntity.getAreaCode()).eq("\"Name\"", ythBdcEntity.getSpsx()).le("rownum", 1));
+                eq("\"CantonCode\"", ythBdcEntity.getAreaCode()).
+                eq("\"TaskState\"", 1).
+                eq("\"Name\"", ythBdcEntity.getSpsx()).le("rownum", 1));
         if (inCatalogEntity == null) {
             logger.error(target + "：找不到相应的事项。");
             return;

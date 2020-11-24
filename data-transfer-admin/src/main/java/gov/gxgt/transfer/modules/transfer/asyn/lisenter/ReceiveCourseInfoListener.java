@@ -78,7 +78,9 @@ public class ReceiveCourseInfoListener {
             return;
         }
         InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().select("*").
-                eq("\"CantonCode\"", ythBdcEntity.getAreaCode()).eq("\"Name\"", ythBdcEntity.getSpsx()).le("rownum", 1));
+                eq("\"CantonCode\"", ythBdcEntity.getAreaCode()).
+                eq("\"TaskState\"", 1).
+                eq("\"Name\"", ythBdcEntity.getSpsx()).le("rownum", 1));
         String target = ythBdcEntity.getId() + "@" + ythBdcEntity.getAreaCode() + "@" + ythBdcEntity.getSpsx();
         if (inCatalogEntity == null) {
             logger.error(target + "：找不到相应的事项。");

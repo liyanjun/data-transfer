@@ -123,42 +123,42 @@ public class ReceiveCourseInfoListener {
     }
 
     private void getItemInfo(Map map, InCatalogEntity inCatalogEntity) throws JsonProcessingException {
-        Map json = new HashMap(16);
-        Map param = new HashMap(16);
-        param.put("AREA_CODE", inCatalogEntity.getCantonCode());
-        param.put("TIME_STAMP", "0");
-        param.put("TASK_STATE", "1");
-        param.put("IS_HISTORY", "0");
-        param.put("TASK_CODE", inCatalogEntity.getCode().trim());
-        json.put("param", param);
+//        Map json = new HashMap(16);
+//        Map param = new HashMap(16);
+//        param.put("AREA_CODE", inCatalogEntity.getCantonCode());
+//        param.put("TIME_STAMP", "0");
+//        param.put("TASK_STATE", "1");
+//        param.put("IS_HISTORY", "0");
+//        param.put("TASK_CODE", inCatalogEntity.getCode().trim());
+//        json.put("param", param);
 
-        HttpHeaders headers = new HttpHeaders();
-        MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
-        headers.setContentType(type);
-        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
-        HttpEntity<String> formEntity = new HttpEntity<String>(objectMapper.writeValueAsString(json), headers);
-        Map result = restTemplate.postForEntity(transferConfig.getUrl() + "getareaaudititemdata?access_token=" + tokenUtils.getAccessToken(), formEntity, Map.class).getBody();
-        Map selectItem = null;
-        List<Map> list = ((List) ((Map) result.get("data")).get("list"));
-
-        for (Map temp : list) {
-            Map item = (Map) temp.get("AUDIT_ITEM");
-            if (item.get("task_code").equals(inCatalogEntity.getCode().trim())) {
-                selectItem = temp;
-            }
-        }
-        for (Map temp : list) {
-            Map item = (Map) temp.get("AUDIT_ITEM");
-            if (item.get("ywcode") != null && StringUtils.isNotBlank(item.get("ywcode").toString())) {
-                if (inCatalogEntity.getChildCode() != null && item.get("ywcode").equals(inCatalogEntity.getChildCode().trim())) {
-                    selectItem = temp;
-                }
-            }
-        }
-        Map item = (Map) selectItem.get("AUDIT_ITEM");
-        map.put("SXBM", StringUtils.isBlank(item.get("ywcode").toString()) ? item.get("task_code") : item.get("ywcode"));
-        ((Map) map.get("GDBSSPCL")).put("SXBM_SHORT", item.get("task_code"));
-        ((Map) map.get("GDBSSPCL")).put("SXBM", item.get("task_code"));
+//        HttpHeaders headers = new HttpHeaders();
+//        MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
+//        headers.setContentType(type);
+//        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
+//        HttpEntity<String> formEntity = new HttpEntity<String>(objectMapper.writeValueAsString(json), headers);
+//        Map result = restTemplate.postForEntity(transferConfig.getUrl() + "getareaaudititemdata?access_token=" + tokenUtils.getAccessToken(), formEntity, Map.class).getBody();
+//        Map selectItem = null;
+//        List<Map> list = ((List) ((Map) result.get("data")).get("list"));
+//
+//        for (Map temp : list) {
+//            Map item = (Map) temp.get("AUDIT_ITEM");
+//            if (item.get("task_code").equals(inCatalogEntity.getCode().trim())) {
+//                selectItem = temp;
+//            }
+//        }
+//        for (Map temp : list) {
+//            Map item = (Map) temp.get("AUDIT_ITEM");
+//            if (item.get("ywcode") != null && StringUtils.isNotBlank(item.get("ywcode").toString())) {
+//                if (inCatalogEntity.getChildCode() != null && item.get("ywcode").equals(inCatalogEntity.getChildCode().trim())) {
+//                    selectItem = temp;
+//                }
+//            }
+//        }
+//        Map item = (Map) selectItem.get("AUDIT_ITEM");
+        map.put("SXBM", StringUtils.isNotBlank(inCatalogEntity.getChildCode()) ? inCatalogEntity.getChildCode() : inCatalogEntity.getCode());
+        ((Map) map.get("GDBSSPCL")).put("SXBM_SHORT", inCatalogEntity.getChildCode());
+        ((Map) map.get("GDBSSPCL")).put("SXBM", inCatalogEntity.getChildCode());
         ((Map) map.get("GDBSSPCL")).put("SPRZWDM", "/");
         ((Map) map.get("GDBSSPCL")).put("SPRZWMC", "/");
     }

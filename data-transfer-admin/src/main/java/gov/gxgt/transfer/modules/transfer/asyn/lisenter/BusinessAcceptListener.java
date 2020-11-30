@@ -127,22 +127,22 @@ public class BusinessAcceptListener {
     }
 
     private void getItemInfo(Map map, InCatalogEntity inCatalogEntity) throws JsonProcessingException {
-        Map json = new HashMap(16);
-        Map param = new HashMap(16);
-        param.put("AREA_CODE", inCatalogEntity.getCantonCode());
-        param.put("TIME_STAMP", "0");
-        param.put("TASK_STATE", "1");
-        param.put("IS_HISTORY", "0");
-        param.put("TASK_CODE", inCatalogEntity.getCode().trim());
-        json.put("param", param);
-
-        HttpHeaders headers = new HttpHeaders();
-        MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
-        headers.setContentType(type);
-        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
-        HttpEntity<String> formEntity = new HttpEntity<String>(objectMapper.writeValueAsString(json), headers);
-        Map result = restTemplate.postForEntity(transferConfig.getUrl() + "getareaaudititemdata?access_token=" + tokenUtils.getAccessToken(), formEntity, Map.class).getBody();
-        List<Map> list = ((List) ((Map) result.get("data")).get("list"));
+//        Map json = new HashMap(16);
+//        Map param = new HashMap(16);
+//        param.put("AREA_CODE", inCatalogEntity.getCantonCode());
+//        param.put("TIME_STAMP", "0");
+//        param.put("TASK_STATE", "1");
+//        param.put("IS_HISTORY", "0");
+//        param.put("TASK_CODE", inCatalogEntity.getCode().trim());
+//        json.put("param", param);
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
+//        headers.setContentType(type);
+//        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
+//        HttpEntity<String> formEntity = new HttpEntity<String>(objectMapper.writeValueAsString(json), headers);
+//        Map result = restTemplate.postForEntity(transferConfig.getUrl() + "getareaaudititemdata?access_token=" + tokenUtils.getAccessToken(), formEntity, Map.class).getBody();
+//        List<Map> list = ((List) ((Map) result.get("data")).get("list"));
         map.put("SXBM", StringUtils.isNotBlank(inCatalogEntity.getChildCode()) ? inCatalogEntity.getChildCode() : inCatalogEntity.getCode());
         ((Map) map.get("YUSHEN")).put("YWYSZT", "1");
         ((Map) map.get("YUSHEN")).put("YWYSRBM", ((Map) map.get("SHOULI")).get("YWSLRBM"));

@@ -85,6 +85,21 @@ public class ReceiveOnlineApplyListener {
                 eq("\"CantonCode\"", ythBdcEntity.getAreaCode()).
                 eq("\"TaskState\"", 1).
                 eq("\"Name\"", ythBdcEntity.getSpsx()).le("rownum", 1));
+        // 崇左特殊处理
+        if (ythBdcEntity.getAreaCode().startsWith("4514")) {
+            inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().select("*").
+                    eq("\"CantonCode\"", ythBdcEntity.getAreaCode()).
+                    eq("\"TaskState\"", 1).
+                    in("\"DeptCode\"", "12451422MB0173307F",
+                            "114514810077235433",
+                            "11451425007768442A",
+                            "11451424007763115W",
+                            "12452133MB0430238X",
+                            "11451421MB1521254M",
+                            "11451402090700990A"
+                    ).
+                    eq("\"Name\"", ythBdcEntity.getSpsx()).le("rownum", 1));
+        }
         String target = ythBdcEntity.getId() + "@" + ythBdcEntity.getAreaCode() + "@" + ythBdcEntity.getSpsx();
         if (inCatalogEntity == null) {
             logger.error(target + "：查询找不到相应的事项。");
@@ -130,7 +145,7 @@ public class ReceiveOnlineApplyListener {
             }
         } catch (Exception e) {
             logger.error("推送数据异常", e);
-            if(e.getMessage().contains("403 Forbidden")){
+            if (e.getMessage().contains("403 Forbidden")) {
                 ythBdcEntity.setException(target + "：推送数据异常。" + e.getMessage());
                 ythBdcEntity.setState(-1);
                 ythBdcService.updateById(ythBdcEntity);

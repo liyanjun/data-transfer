@@ -3,6 +3,7 @@ package gov.gxgt.transfer.modules.transfer.asyn.lisenter;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.gxgt.transfer.common.utils.DateUtils;
 import gov.gxgt.transfer.modules.transfer.asyn.event.BusinessFinishEvent;
 import gov.gxgt.transfer.modules.transfer.config.TransferConfig;
 import gov.gxgt.transfer.modules.transfer.entity.InCatalogEntity;
@@ -71,7 +72,7 @@ public class BusinessFinishListener {
         TransferRequestRecordEntity transferRequestRecordEntity = null;
         String accessToken = tokenUtils.getAccessToken();
         YthBdcEntity ythBdcEntity = ythBdcService.getOne(new QueryWrapper<YthBdcEntity>().eq("ID", businessFinishEvent.getSource()));
-        if (ythBdcEntity.getState() != 3) {
+        if (ythBdcEntity.getState() != 3 && ythBdcEntity.getState() != 7) {
             // 已推送，不管了
             return;
         }
@@ -111,6 +112,30 @@ public class BusinessFinishListener {
         }
         if (inCatalogEntity == null) {
             logger.error(target + "：找不到相应的事项。");
+            return;
+        }
+
+//        MultiValueMap infoRequestMap = new LinkedMultiValueMap(16);
+//        infoRequestMap.put("access_token", Collections.singletonList(accessToken));
+//        infoRequestMap.put("accessToken", Collections.singletonList(tokenUtils.getToken()));
+//        infoRequestMap.put("xmlStr", Collections.singletonList("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+//                "<APPROVEDATAINFO>\n" +
+//                "\t<SBLSH_SHORT>" + ythBdcEntity.getLsh() + "</SBLSH_SHORT>\n" +
+//                "<SXBM>" + (StringUtils.isNotBlank(inCatalogEntity.getChildCode()) ? inCatalogEntity.getChildCode() : inCatalogEntity.getCode()) + "</SXBM>\n" +
+//                "</APPROVEDATAINFO>\n"));
+//        HttpHeaders infoHeaders = new HttpHeaders();
+//        infoHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//        HttpEntity<MultiValueMap<String, String>> infoRequest = new HttpEntity<MultiValueMap<String, String>>(infoRequestMap, infoHeaders);
+//        ResponseEntity<String> infoResponseEntity = restTemplate.postForEntity(transferConfig.getUrl() + "httpapi/approve/getApplyInfo", infoRequest, String.class);
+//        String limitDate = infoResponseEntity.getBody().substring(infoResponseEntity.getBody().indexOf("<LIMIT_TIME>") + 12, infoResponseEntity.getBody().indexOf("<LIMIT_TIME>") + 31);
+        Map sl = objectMapper.readValue(ythBdcEntity.getDataSl(), Map.class);
+        String limitDate =  DateUtils.format(DateUtils.addDateDays(DateUtils.stringToDate(((Map) sl.get("SHOULI")).get("YWSLSJ").toString(), DateUtils.DATE_TIME_PATTERN), inCatalogEntity.getDaysOfPromise()), DateUtils.DATE_TIME_PATTERN);
+        logger.error(((Map) map.get("SPBANJIE")).get("BJSJ").toString() + "--------------------------" + limitDate);
+        // 办结时间超过或者等于限制时间，而且不是从挂起状态跳转的，需要挂起
+        if(DateUtils.daysBettwen(((Map) map.get("SPBANJIE")).get("BJSJ").toString(), limitDate) <= 0 && ythBdcEntity.getState() == 3){
+            logger.error("需要进入挂起流程");
+            ythBdcEntity.setState(5);
+            ythBdcService.updateById(ythBdcEntity);
             return;
         }
 

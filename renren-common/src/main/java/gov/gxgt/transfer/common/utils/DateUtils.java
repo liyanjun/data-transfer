@@ -130,6 +130,17 @@ public class DateUtils {
         return dateTime.plusDays(days).toDate();
     }
 
+    public static int daysBettwen(Date finishDate, Date limitDate){
+        long from1 = finishDate.getTime();
+        long to1 = limitDate.getTime();
+        int minutes = (int) ((to1 - from1) / (1000 * 60));
+        return minutes;
+    }
+
+    public static int daysBettwen(String finishDate, String limitDate){
+        return daysBettwen(DateUtils.stringToDate(finishDate, DateUtils.DATE_TIME_PATTERN), DateUtils.stringToDate(limitDate, DateUtils.DATE_TIME_PATTERN));
+    }
+
     /**
      * 对日期的【周】进行加/减
      *

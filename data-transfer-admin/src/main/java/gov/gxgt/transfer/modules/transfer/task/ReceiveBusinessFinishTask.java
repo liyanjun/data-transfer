@@ -29,8 +29,7 @@ public class ReceiveBusinessFinishTask {
 
     public void run(String temp) {
         // 一次查100条
-        List<YthBdcEntity> ythBdcEntityList = ythBdcService.list(new QueryWrapper<YthBdcEntity>().
-                eq("STATE", 3).
+        List<YthBdcEntity> ythBdcEntityList = ythBdcService.list(new QueryWrapper<YthBdcEntity>().and(ythBdcEntityQueryWrapper -> ythBdcEntityQueryWrapper.eq("STATE", 3).or().eq("STATE", 7)).
                 isNotNull("AREA_CODE").
                 isNotNull("DATA_BJ").
                 lt("rownum", 30));

@@ -101,6 +101,8 @@ public class BusinessAcceptListener {
         }
         String target = ythBdcEntity.getId() + "@" + ythBdcEntity.getAreaCode() + "@" + ythBdcEntity.getSpsx();
         if (inCatalogEntity == null) {
+            ythBdcEntity.setState(-2);
+            ythBdcService.updateById(ythBdcEntity);
             logger.error(target + "：找不到相应的事项。");
             return;
         }

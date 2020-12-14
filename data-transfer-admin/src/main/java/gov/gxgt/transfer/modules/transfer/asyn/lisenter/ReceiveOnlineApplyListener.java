@@ -82,11 +82,11 @@ public class ReceiveOnlineApplyListener {
             return;
         }
         InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().select("*").
-                eq("\"CantonCode\"", ythBdcEntity.getAreaCode()).
+                eq("\"CantonCode\"", ythBdcEntity.getAreaCode().replace("451302", "451300")).
                 eq("\"TaskState\"", 1).
                 eq("\"Name\"", ythBdcEntity.getSpsx()).le("rownum", 1));
         // 崇左特殊处理
-        if (ythBdcEntity.getAreaCode().startsWith("4514")) {
+        if (ythBdcEntity.getAreaCode().startsWith("4514") && !"451400".equals(ythBdcEntity.getAreaCode())) {
             inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().select("*").
                     eq("\"CantonCode\"", ythBdcEntity.getAreaCode()).
                     eq("\"TaskState\"", 1).

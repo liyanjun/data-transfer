@@ -83,7 +83,7 @@ public class GetSuspendInfoEndListener {
             return;
         }
         InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().select("*").
-                eq("\"CantonCode\"", ythBdcEntity.getAreaCode().replace("451302", "451300")).
+                eq("\"CantonCode\"", ythBdcEntity.getAreaCode().replace("451302", "451300").replace("451021", "451003")).
                 eq("\"TaskState\"", 1).
                 eq("\"Name\"", ythBdcEntity.getSpsx()).le("rownum", 1));
         if (ythBdcEntity.getAreaCode().startsWith("4514")) {

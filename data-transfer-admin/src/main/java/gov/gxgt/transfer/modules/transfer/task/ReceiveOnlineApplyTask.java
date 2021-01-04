@@ -34,7 +34,7 @@ public class ReceiveOnlineApplyTask {
 //                eq("AREA_CODE", 450500).
                 isNotNull("AREA_CODE").
                 isNotNull("DATA_SB").
-                lt("rownum", 100));
+                lt("rownum", 60));
         for (YthBdcEntity ythBdcEntity: ythBdcEntityList) {
             applicationContext.publishEvent(new RecerviOnlineApplyEvent(ythBdcEntity.getId()));
         }

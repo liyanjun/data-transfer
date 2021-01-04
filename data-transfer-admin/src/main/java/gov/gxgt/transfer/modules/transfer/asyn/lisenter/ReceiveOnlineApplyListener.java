@@ -132,11 +132,11 @@ public class ReceiveOnlineApplyListener {
             String result = responseEntity.getBody();
             transferRequestRecordEntity.setResponse(result);
             transferRequestRecordEntity.setResponseTime(new Date());
-            if (result.contains("请求成功") || result.contains("当前业务已")) {
+            if (result.contains("请求成功")) {
                 ythBdcEntity.setState(1);
                 ythBdcService.updateById(ythBdcEntity);
                 transferRequestRecordService.updateById(transferRequestRecordEntity);
-            } else {
+            } else if(!result.contains("接口令牌不存在") && !result.contains("当前业务已")) {
                 ythBdcEntity.setException(result);
                 ythBdcEntity.setState(-1);
                 ythBdcService.updateById(ythBdcEntity);

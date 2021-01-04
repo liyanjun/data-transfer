@@ -33,7 +33,7 @@ public class GetSuspendInfoTask {
         List<YthBdcEntity> ythBdcEntityList = ythBdcService.list(new QueryWrapper<YthBdcEntity>().
                 eq("STATE", 5).
                 isNotNull("AREA_CODE").
-                lt("rownum", 2));
+                lt("rownum", 50));
         for (YthBdcEntity ythBdcEntity: ythBdcEntityList) {
             applicationContext.publishEvent(new GetSuspendInfoEvent(ythBdcEntity.getId()));
         }

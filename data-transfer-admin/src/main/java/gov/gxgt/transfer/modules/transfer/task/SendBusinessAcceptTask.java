@@ -32,7 +32,7 @@ public class SendBusinessAcceptTask {
                 eq("STATE", 1).
                 isNotNull("AREA_CODE").
                 isNotNull("DATA_SL").
-                lt("rownum", 30));
+                lt("rownum", 50));
         for (YthBdcEntity ythBdcEntity: ythBdcEntityList) {
             applicationContext.publishEvent(new BusinessAcceptEvent(ythBdcEntity.getId()));
         }

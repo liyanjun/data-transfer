@@ -32,7 +32,7 @@ public class ReceiveBusinessFinishTask {
         List<YthBdcEntity> ythBdcEntityList = ythBdcService.list(new QueryWrapper<YthBdcEntity>().and(ythBdcEntityQueryWrapper -> ythBdcEntityQueryWrapper.eq("STATE", 3).or().eq("STATE", 7)).
                 isNotNull("AREA_CODE").
                 isNotNull("DATA_BJ").
-                lt("rownum", 30));
+                lt("rownum", 50));
         for (YthBdcEntity ythBdcEntity: ythBdcEntityList) {
             applicationContext.publishEvent(new BusinessFinishEvent(ythBdcEntity.getId()));
         }

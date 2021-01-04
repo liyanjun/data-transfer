@@ -32,7 +32,7 @@ public class ReceiveCourseInfoTask {
                 eq("STATE", 2).
                 isNotNull("AREA_CODE").
                 isNotNull("DATA_SP").
-                lt("rownum", 30));
+                lt("rownum", 50));
         for (YthBdcEntity ythBdcEntity: ythBdcEntityList) {
             applicationContext.publishEvent(new RecerviCourseInfoEvent(ythBdcEntity.getId()));
         }

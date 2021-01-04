@@ -85,7 +85,7 @@ public class BusinessAcceptListener {
                 eq("\"CantonCode\"", ythBdcEntity.getAreaCode().replace("451302", "451300").replace("451021", "451003")).
                 eq("\"TaskState\"", 1).
                 eq("\"Name\"", ythBdcEntity.getSpsx()).le("rownum", 1));
-        if (ythBdcEntity.getAreaCode().startsWith("4514")) {
+        if (ythBdcEntity.getAreaCode().startsWith("4514") && !"451400".equals(ythBdcEntity.getAreaCode())) {
             inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().select("*").
                     eq("\"CantonCode\"", ythBdcEntity.getAreaCode()).
                     eq("\"TaskState\"", 1).
@@ -127,7 +127,7 @@ public class BusinessAcceptListener {
                 ythBdcEntity.setState(2);
                 ythBdcService.updateById(ythBdcEntity);
                 transferRequestRecordService.updateById(transferRequestRecordEntity);
-            } else {
+            } else if(!result.contains("接口令牌不存在") && !result.contains("当前业务已")) {
                 ythBdcEntity.setException(result);
                 ythBdcEntity.setState(-2);
                 ythBdcService.updateById(ythBdcEntity);

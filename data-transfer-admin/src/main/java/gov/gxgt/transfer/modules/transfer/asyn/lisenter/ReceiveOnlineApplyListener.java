@@ -84,6 +84,7 @@ public class ReceiveOnlineApplyListener {
         InCatalogEntity inCatalogEntity = inCatalogService.getOne(new QueryWrapper<InCatalogEntity>().select("*").
                 eq("\"CantonCode\"", ythBdcEntity.getAreaCode().replace("451302", "451300").replace("451021", "451003")).
                 eq("\"TaskState\"", 1).
+                eq("\"IsDeleted\"", 0).
                 eq("\"Name\"", ythBdcEntity.getSpsx()).le("rownum", 1));
         // 崇左特殊处理
         if (ythBdcEntity.getAreaCode().startsWith("4514") && !"451400".equals(ythBdcEntity.getAreaCode())) {
@@ -119,7 +120,7 @@ public class ReceiveOnlineApplyListener {
         }
         String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + XMLUtils.multilayerMapToXml(map, false, "APPROVEDATAINFO");
         MultiValueMap requestMap = new LinkedMultiValueMap(16);
-        requestMap.put("access_token", Collections.singletonList(accessToken));
+//        requestMap.put("access_token", Collections.singletonList(accessToken));
         requestMap.put("accessToken", Collections.singletonList(tokenUtils.getToken()));
         requestMap.put("xmlStr", Collections.singletonList(xml.replace("SXBM_SHORT ", "SXBM_SHORT").replace("&lt;", "<").replace("&gt;", ">")));
         HttpHeaders headers = new HttpHeaders();
@@ -128,7 +129,7 @@ public class ReceiveOnlineApplyListener {
         try {
             // 保存发送记录
             transferRequestRecordEntity = transferRequestRecordService.saveRequest(objectMapper.writeValueAsString(map), ythBdcEntity.getId(), 1);
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity(transferConfig.getUrl() + "httpapi/approve/getOnlineApply", request, String.class);
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity(transferConfig.getUrl() + "httpapi/approve/getOnlineApply?access_token=" + accessToken, request, String.class);
             String result = responseEntity.getBody();
             transferRequestRecordEntity.setResponse(result);
             transferRequestRecordEntity.setResponseTime(new Date());

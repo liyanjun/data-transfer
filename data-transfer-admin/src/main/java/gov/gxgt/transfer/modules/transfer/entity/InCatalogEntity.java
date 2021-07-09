@@ -112,5 +112,9 @@ public class InCatalogEntity implements Serializable {
 	 * $column.comments
 	 */
 	private String ChildCode;
+	/**
+	 * $column.comments
+	 */
+	private String CatalogType;
 
 }

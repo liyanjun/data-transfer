@@ -133,7 +133,7 @@ public class BusinessFinishListener {
         String limitDate =  DateUtils.format(DateUtils.addDateDays(DateUtils.stringToDate(((Map) sl.get("SHOULI")).get("YWSLSJ").toString(), DateUtils.DATE_TIME_PATTERN), inCatalogEntity.getDaysOfPromise()), DateUtils.DATE_TIME_PATTERN);
         logger.error(((Map) map.get("SPBANJIE")).get("BJSJ").toString() + "--------------------------" + limitDate);
         // 办结时间超过或者等于限制时间，而且不是从挂起状态跳转的，需要挂起
-        if(DateUtils.daysBettwen(((Map) map.get("SPBANJIE")).get("BJSJ").toString(), limitDate) <= 0 && ythBdcEntity.getState() == 3){
+        if("承诺件".equals(inCatalogEntity.getCatalogType()) && DateUtils.daysBettwen(((Map) map.get("SPBANJIE")).get("BJSJ").toString(), limitDate) <= 0 && ythBdcEntity.getState() == 3){
             logger.error("需要进入挂起流程");
             ythBdcEntity.setState(5);
             ythBdcService.updateById(ythBdcEntity);
